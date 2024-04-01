@@ -10,7 +10,7 @@ const Neuron = synaptic.Neuron,
 
 // config constants
 const carsCount = 100; 
-const trafficCount = 20;
+const trafficCount = 25;
 const yLimit = -5000;
 let mutateRatio = 0.1;
 const roundLength = 1800;
