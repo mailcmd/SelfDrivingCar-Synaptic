@@ -10,7 +10,7 @@ const Neuron = synaptic.Neuron,
 
 // config constants
 const carsCount = 100; 
-const trafficCount = 25;
+const trafficCount = 20;
 const yLimit = -5000;
 let mutateRatio = 0.1;
 const roundLength = 1800;
@@ -45,6 +45,9 @@ document.onkeypress = e => {
 // main settings
 carCanvas.width = 250;
 const carCtx = carCanvas.getContext('2d');
+
+networkCanvas.width = innerWidth - 450;
+const networkCtx = networkCanvas.getContext('2d');
 
 // road declaration
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.95);

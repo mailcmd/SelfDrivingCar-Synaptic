@@ -44,7 +44,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: left;
-    width: 30%;
+    width: 200px;
     padding: 10px;
 }
 

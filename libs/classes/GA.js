@@ -16,14 +16,13 @@ function createNextGeneration() {
 	let brains = cars.sort( (a,b) => b.score - a.score).map( c => c.brain ).slice(0, brainsCount);
 	// let brains = [];
 	// for (let i = 0; i < brainsCount; i+=2) {
-	// 	brains = [...brains, ...NeuralNetwork.crossNetworks(cars[i].brain, cars[i+1].brain)];
+	// 	brains = [...brains, ...NeuralNetwork.crossNetworksModels(cars[i].brain, cars[i+1].brain)];
 	// }
-	
 	cars.forEach( (car, i) => {
 		car.reset();
 		car.brain = new NeuralNetwork(car.brain.neuronsCenter, car.brain.neuronsSides);
 		car.brain.load(brains[i % brainsCount].getModel());
-		// if (Math.random() <= mutateRatio) 
+		//if (Math.random() <= mutateRatio) 
 		if (i > 0) 
 			car.brain.mutate(mutateRatio); 
 	});

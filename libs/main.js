@@ -12,6 +12,7 @@ function animate(time) {
     }
     
     carCanvas.height = window.innerHeight;
+    networkCanvas.height = window.innerHeight;
 
     const carMaxScore = Math.max(...cars.map( c => c.score ));
     bestCar = cars.find( car => car.score ==  carMaxScore) ?? bestCar;
@@ -48,6 +49,8 @@ function animate(time) {
 
     carCtx.restore();
 
+    Visualizer.drawNetwork(bestCar.brain);
+
     if (!paused) {
         requestAnimationFrame(animate);
     } 
@@ -74,7 +77,7 @@ function generateCars(N, model, controlType = 'AI') {
             })
         );
         // Muto todos menos el primero
-        if (i > 0) cars[cars.length-1].brain.mutate(mutateRatio); 
+        //if (i > 0) cars[cars.length-1].brain.mutate(mutateRatio); 
     }
     return cars;
 }
