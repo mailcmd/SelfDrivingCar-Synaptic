@@ -106,7 +106,9 @@ function resetTraffic(traffic) {
 }
 
 function saveModel(name = 'model') {
+    localStorage.setItem(name+'-bkp', JSON.stringify(restoreModel()));
     localStorage.setItem(name, JSON.stringify(bestCar.brain.getModel()));
+    //localStorage.setItem(name+'-cp', JSON.stringify(bestCar.brain.getModel()));
 }
 function removeModel(name = 'model') {
     localStorage.removeItem(name);
