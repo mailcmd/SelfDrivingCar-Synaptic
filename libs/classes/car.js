@@ -28,6 +28,8 @@ class Car {
         this.fitness = 0;
         this.score = 0;
         this.updateCounter = 0;
+        
+        this.saveStages = [ 0.5, 0.75, 1 ];
 
         this.useBrain = controlType == 'AI';
 
@@ -95,6 +97,15 @@ class Car {
                     this.controls.forward = outputs[1];
                     this.controls.right = outputs[2];
                     this.controls.reverse = outputs[3];
+                }
+                if (!this.useBrain && this.speed > 0 && this.updateCounter % 1 == 0) {
+                    addTrainingData(this);
+                }
+
+                if (!this.useBrain && this.saveStages.length > 0 && this.getProgress() >= this.saveStages[0]) {
+                    this.saveStages.shift();
+                    saveTrainingDataBatch();
+                    log('Progress: ', this.getProgress());
                 }
 
             }
@@ -181,6 +192,7 @@ class Car {
     }
 
     getProgress() {
+        return this.overpassedCars / traffic.length;
         let overpassedCars = 0;
         for (let i = 0; i < traffic.length; i++) {
             overpassedCars += this.y < traffic[i].y ? 1 : 0; 

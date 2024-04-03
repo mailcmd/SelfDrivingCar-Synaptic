@@ -10,7 +10,7 @@ const Neuron = synaptic.Neuron,
 
 // config constants
 const carsCount = 100; 
-const trafficCount = 20;
+const trafficCount = 25;
 const yLimit = -5000;
 let mutateRatio = 0.1;
 const roundLength = 1800;
@@ -60,19 +60,12 @@ let trafficOriginalCoords = traffic.map( c => ({ x: c.x, y: c.y, maxSpeed: c.max
 
 // cars declaration and init
 const controlType = 'AI';
-let aliveCars = [];
 let cars;
 try {
     const model = restoreModel();
     cars = generateCars(carsCount, model,  controlType);
-    for (let i = 0; i < carsCount; i++) {
-        aliveCars[i] = cars[i];
-    }
     animate(1);
 } catch(e) {
     cars = generateCars(carsCount, null, controlType);
-    for (let i = 0; i < carsCount; i++) {
-        aliveCars[i] = cars[i];
-    }
     animate(1);
 };

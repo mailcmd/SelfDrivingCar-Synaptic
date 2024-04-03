@@ -54,6 +54,26 @@ class NeuralNetwork {
       return this.lastActivates[2];
    }
 
+   train({
+      inputs,
+      outputs,
+      epoch = 500,
+      learningRate = 0.3
+   }) {
+      for (let i = 0; i < epoch; i++) {
+         for (let j = 0; j < this.levels[0].length; j++) {
+            this.levels[0][j].activate(inputs[j]);
+         }
+         for (let j = 0; j < this.levels[1].length; j++) {
+            this.levels[1][j].activate();
+         }
+         for (let j = 0; j < this.levels[2].length; j++) {
+            this.levels[2][j].activate();
+            this.levels[2][j].propagate(learningRate, outputs[j]);
+         }
+      }
+   }
+
    mutate(amount = 1) {
       for (let i = 0; i < this.levels.length; i++) {
          const neurons = this.levels[i];

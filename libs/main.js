@@ -17,17 +17,17 @@ function animate(time) {
     const carMaxScore = Math.max(...cars.map( c => c.score ));
     bestCar = cars.find( car => car.score ==  carMaxScore) ?? bestCar;
     panelMaxOC.innerHTML = bestCar.overpassedCars;
-    if (bestCar.overpassedCars >= traffic.length) {
+    if (controlType == 'AI' && bestCar.overpassedCars >= traffic.length) {
         paused = true;
         saveModel();
     }
     panelAvgFitness.innerHTML = ~~(bestCar.score);
-    if (resetTimeOut == -1 && bestCar.damaged ) {
+    if (controlType == 'AI' && resetTimeOut == -1 && bestCar.damaged ) {
         resetTimeOut = setTimeout(()=> {
             resetTimeOut = -1;    
             createNextGeneration();
         }, 3000)
-    } else if (!bestCar.damaged) {
+    } else if (controlType == 'AI' && !bestCar.damaged) {
         clearTimeout(resetTimeOut);
         resetTimeOut = -1;
     }
@@ -49,14 +49,16 @@ function animate(time) {
 
     carCtx.restore();
 
-    Visualizer.drawNetwork(bestCar.brain);
+    //Visualizer.drawNetwork(bestCar.brain);
 
     if (!paused) {
         requestAnimationFrame(animate);
     } 
 
-    if (resetGameNow || cars.filter( c => !c.damaged ).length == 0) {
+    if (controlType == 'AI' && resetGameNow || cars.filter( c => !c.damaged ).length == 0) {
 		createNextGeneration();
+	} else if (controlType == 'KEYS' && resetGameNow) {
+		resetGame();
 	}
 
 }
@@ -87,7 +89,7 @@ function generateTraffic(N) {
     for (let i = 0; i < N; i++) {
         traffic.push( 
             new Car({            
-                x: road.getLaneCenter( parseInt(Math.random()*3) ), // + (Math.random()*40-20), 
+                x: road.getLaneCenter( parseInt(Math.random()*3) ),// + (Math.random()*40-20), 
                 y: -parseInt(Math.random() * 2200),
                 width: 30, 
                 height: 50, 
@@ -125,46 +127,46 @@ let log = console.log;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+function addTrainingData(car) {
+    const inputs = car.getInputs();
+    trainData.push({
+        input: inputs,
+        output: [
+            car.controls.left,
+            car.controls.forward,
+            car.controls.right,
+            car.controls.reverse
+        ]
+    });
+}
 
-// function addTrainingData(car) {
-//     const inputs = car.getInputs();
-//     trainData.push({
-//         input: inputs,
-//         output: [
-//             car.controls.left,
-//             car.controls.forward,
-//             car.controls.right,
-//             car.controls.reverse
-//         ]
-//     });
-// }
+function saveTrainingDataBatch() {
+    const currentTrainData = JSON.parse(localStorage.getItem('trainData') || '[]');
+    const newTrainData = [ ...currentTrainData, ...trainData ];
+    localStorage.setItem('trainData', JSON.stringify(newTrainData));
+    trainData = [];
+    console.log('Train data saved! Data count: ' + newTrainData.length);
+}
 
-// function saveTrainingDataBatch() {
-//     const currentTrainData = JSON.parse(localStorage.getItem('trainData') || '[]');
-//     const newTrainData = [ ...currentTrainData, ...trainData ];
-//     localStorage.setItem('trainData', JSON.stringify(newTrainData));
-//     trainData = [];
-//     console.log('Train data saved! Data count: ' + newTrainData.length);
-// }
+function restoreTrainingData() {
+    return JSON.parse(localStorage.getItem('trainData') || '[]');
+}
 
-// function restoreTrainingData() {
-//     return JSON.parse(localStorage.getItem('trainData') || '[]');
-// }
+function discardTrainingData() {
+    localStorage.removeItem('trainData');
+}
 
-// function discardTrainingData() {
-//     localStorage.removeItem('trainData');
-// }
+function getTrainingData() {
+    let data = restoreTrainingData(), inputs = data.map( d => d.input), outputs = data.map( d => d.output);
+    return { inputs, outputs };
+}
+
+function train(opts = {}) {
+    paused = true;
+    bestCar.brain.train( { ...getTrainingData(), ...opts } );
+}
 
 // function discardLocalStorageModels() {
 //     Object.keys(localStorage).forEach( k => k.slice(0, ('tensorflowjs_models/'+tfModelName).length) == 'tensorflowjs_models/'+tfModelName && (localStorage.removeItem(k)));
 // }
 
-// function getTrainingData() {
-//     let data = restoreTrainingData(), inputs = data.map( d => d.input), outputs = data.map( d => d.output);
-//     return { inputs, outputs };
-// }
-
-// function train(opts = {}) {
-//     paused = true;
-//     bestCar.brain.train( { ...getTrainingData(), ...opts } );
-// }
