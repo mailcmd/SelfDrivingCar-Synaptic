@@ -3,55 +3,65 @@ class NeuralNetwork {
       this.neuronsCenter = neuronsCenter;
       this.neuronsSides = neuronsSides;
       this.lastActivates = [];
+      this.inputLayer = new Layer();
+      this.hiddenLayer = new Layer();
+      this.outputLayer = new Layer();
       
-      this.levels = [[], [], []];
-      this.levels[2] = [ 
-         new Neuron(),
-         new Neuron(),
-         new Neuron(),
-         new Neuron()
-      ];
+      this.levels = [ this.inputLayer, this.hiddenLayer, this.outputLayer ];
+      [ new Neuron(), new Neuron(), new Neuron(), new Neuron() ].forEach( n => this.levels[2].add(n) );
+      
       for (let i = 0; i < this.neuronsCenter; i++) {
-         this.levels[0].push(new Neuron());
-         this.levels[1].push(new Neuron());
+         this.levels[0].add(new Neuron());
+         this.levels[1].add(new Neuron());
       }
       for (let i = 0; i < this.neuronsCenter; i++) {
          for (let j = 0; j < this.neuronsCenter; j++) {
-            this.levels[0][i].project(this.levels[1][j]);
+            this.levels[0].list[i].project(this.levels[1].list[j]);
          }
       }
       for (let i = 0; i < this.neuronsCenter; i++) {
          for (let j = 0; j < 4; j++) {
-            this.levels[1][i].project(this.levels[2][j]);
+            this.levels[1].list[i].project(this.levels[2].list[j]);
          }
       }
 
       for (let i = 0; i < this.neuronsSides; i++) {
-         this.levels[0].push(new Neuron());
+         this.levels[0].add(new Neuron());
       }
       for (let i = 0; i < this.neuronsSides; i++) {
          for (let j = 0; j < 4; j++) {
-            this.levels[0][this.neuronsCenter + i].project(this.levels[2][j]);
+            this.levels[0].list[this.neuronsCenter + i].project(this.levels[2].list[j]);
          }
       }
+      this.network = new Network({
+         input: this.inputLayer,
+         hidden: [this.hiddenLayer],
+         output: this.outputLayer
+      });
    }
 
    feedForward(givenInputs, binarize = true) {
       this.lastActivates[0] = givenInputs;
       this.lastActivates[1] = [];
-      this.lastActivates[2] = [];
+      const outputs = this.network.activate(givenInputs);
+      
+      this.lastActivates[2] = binarize ? outputs.map( o => Math.round(o)) : o;
+      return this.lastActivates[2];
+      
+      /*
       for (let i = 0; i < givenInputs.length; i++) {
-         this.levels[0][i].activate(givenInputs[i]);
+         this.levels[0].list[i].activate(givenInputs[i]);
       }
-      for (let i = 0; i < this.levels[1].length; i++) {
-         this.lastActivates[1].push(this.levels[1][i].activate());
+      for (let i = 0; i < this.levels[1].list.length; i++) {
+         this.lastActivates[1].push(this.levels[1].list[i].activate());
       }
       const outputs = [];
-      for (let i = 0; i < this.levels[2].length; i++) {
-         outputs.push(this.levels[2][i].activate());
+      for (let i = 0; i < this.levels[2].list.length; i++) {
+         outputs.push(this.levels[2].list[i].activate());
       }
       this.lastActivates[2] = binarize ? outputs.map( o => Math.round(o)) : o;
       return this.lastActivates[2];
+      */
    }
 
    train({
@@ -76,7 +86,7 @@ class NeuralNetwork {
 
    mutate(amount = 1) {
       for (let i = 0; i < this.levels.length; i++) {
-         const neurons = this.levels[i];
+         const neurons = this.levels[i].list;
          for (let j = 0; j < neurons.length; j++) {
             neurons[j].bias = lerp(
                neurons[j].bias,
@@ -99,7 +109,7 @@ class NeuralNetwork {
 
    load(model) {      
       for (let i = 0; i < this.levels.length; i++) {
-         const neurons = this.levels[i];
+         const neurons = this.levels[i].list;
          for (let j = 0; j < neurons.length; j++) {
             neurons[j].bias = model[i][j].bias;
             let k = 0;
@@ -114,7 +124,7 @@ class NeuralNetwork {
    getModel() {
       const model = [];
       for (let i = 0; i < this.levels.length; i++) {
-         const neurons = this.levels[i];
+         const neurons = this.levels[i].list;
          model[i] = [];
          for (let j = 0; j < neurons.length; j++) {
             const neuron = { bias: neurons[j].bias, weights: [] };            

@@ -74,7 +74,7 @@ function generateCars(N, model, controlType = 'AI') {
                 width: 30,
                 height: 50,
                 controlType: controlType,
-                sensorsCount: 15,
+                sensorsCount: 31,
                 model: model
             })
         );
