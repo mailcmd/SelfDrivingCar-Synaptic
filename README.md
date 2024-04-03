@@ -1,7 +1,7 @@
 # Neural Net Scheme
 
 ```mermaid
-graph Scheme;
+graph TR;
     
 
 ```
