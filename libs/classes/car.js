@@ -193,16 +193,11 @@ class Car {
 
     getProgress() {
         return this.overpassedCars / traffic.length;
-        let overpassedCars = 0;
-        for (let i = 0; i < traffic.length; i++) {
-            overpassedCars += this.y < traffic[i].y ? 1 : 0; 
-        }
-        return overpassedCars / traffic.length;
     }
 
     #createPolygon() {
         const points = [];
-        const rad = 0.9*Math.hypot(this.width, this.height) / 2;
+        const rad = 0.85*Math.hypot(this.width, this.height) / 2;
         const alpha = Math.atan2(this.width, this.height);
         points.push({
              x: this.x - Math.sin(this.angle - alpha) * rad,

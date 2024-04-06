@@ -9,7 +9,7 @@ const Neuron = synaptic.Neuron,
 	Architect = synaptic.Architect;
 
 // config constants
-const carsCount = 100; 
+const carsCount = 1; 
 const trafficCount = 25;
 const yLimit = -5000;
 let mutateRatio = 0.1;
